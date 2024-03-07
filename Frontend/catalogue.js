@@ -1,7 +1,38 @@
 document.addEventListener("DOMContentLoaded", function() {
     const container = document.querySelector(".container");
+    const userUid = localStorage.getItem('userUid');
+    const logoutButton = document.getElementById("logout");
 
-    // Функция для отправки запроса на сервер
+    logoutButton.addEventListener("click", function() {
+        localStorage.removeItem("userUid");
+        window.location.href = "login.html";
+    });
+
+    const checkoutButton = document.getElementById("checkout-btn");
+    checkoutButton.addEventListener("click", function() {
+        var deliveryType = document.getElementById("delivery-type-checkbox").checked ? true : false;
+        var url = `http://127.0.0.1:8000/order/place_order?user_uid=${userUid}&delivery_type=${deliveryType}`;
+        fetch(url, { method: "POST" })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Handle the response data here
+            })
+            .catch(error => {
+                console.error('There has been a problem with your fetch operation:', error);
+            });
+
+            alert("Заказ успешно оформлен!");
+            location.reload();
+    });
+
+
+    
+    // Функция для получения лекарств
     async function fetchMedicines() {
         try {
             const response = await fetch("http://127.0.0.1:8000/cure/get_all");
@@ -18,7 +49,7 @@ document.addEventListener("DOMContentLoaded", function() {
     // Функция для изменения количества лекарства по cure_uid
     async function fetchCureCartCount(cureUid) {
         try {
-            const response = await fetch(`http://127.0.0.1:8000/order/get_cart?user_uid=a84c3213-c66c-4b29-872a-f49dc999bc49`);
+            const response = await fetch(`http://127.0.0.1:8000/order/get_cart?user_uid=${userUid}`);
             const cartItems = await response.json();
             if ("message" in cartItems && cartItems.message === "Cart is empty") {
                 console.log("Корзина пуста");
@@ -85,7 +116,7 @@ document.addEventListener("DOMContentLoaded", function() {
             return;
         }
         
-        const userUid = "a84c3213-c66c-4b29-872a-f49dc999bc49"; // Ваш user_uid
+
         const url = `http://127.0.0.1:8000/order/add_cure?cure_uid=${cureUid}&user_uid=${userUid}`;
         // Отправляем запрос
         fetch(url, { method: "POST" })
@@ -100,7 +131,7 @@ document.addEventListener("DOMContentLoaded", function() {
         
             const quantityElement = div.querySelector(".cart-quantity");
             const newCount = await fetchCureCartCount(cureUid);
-            quantityElement.innerText = newCount;    
+            quantityElement.innerText = newCount;  
 
         });
 
@@ -113,7 +144,6 @@ document.addEventListener("DOMContentLoaded", function() {
             return;
         }
 
-        const userUid = "a84c3213-c66c-4b29-872a-f49dc999bc49"; // Ваш user_uid
         const url = `http://127.0.0.1:8000/order/remove_cure?cure_uid=${cureUid}&user_uid=${userUid}`;
         // Отправляем запрос
         fetch(url, { method: "POST" })

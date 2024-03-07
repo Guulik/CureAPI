@@ -66,7 +66,7 @@ def remove_cure(cure_uid: str, user_uid: str, db: Session) -> Optional[cartCure]
         return None
 
 
-def place_order(user_uid: str, delivery_type: bool, db: Session) -> str:
+def place_order(user_uid: str, delivery_type: bool, db: Session) -> Optional[dbOrder]:
     new_order_uid = str(uuid.uuid4())
 
     try:
@@ -87,10 +87,10 @@ def place_order(user_uid: str, delivery_type: bool, db: Session) -> str:
             setattr(cure, "count", cure.count - cureInCart.count)
             db.commit()
 
-        return newOrder.uid
+        return newOrder
     except Exception as e:
         print(e)
-        return nullUid
+        return None
 
 
 def get_order(order_id: int, db: Session) -> Optional[dbOrder]:
