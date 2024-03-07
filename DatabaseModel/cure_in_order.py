@@ -11,9 +11,9 @@ class CureInOrder(Base):
     price = Column(Integer)
     delivery_time = Column(Integer)
 
-    cure_id = Column(String, ForeignKey('cures.id'))
+    cure_id = Column(Integer, ForeignKey('cures.id'))
     cure = relationship("Cure", back_populates="cure_in_order")
-    user_id = Column(String, ForeignKey('users.id'))
+    user_id = Column(Integer, ForeignKey('users.id'))
     user = relationship("User", back_populates="cure_in_order")
     order_id = Column(Integer, ForeignKey('orders.id'), nullable=True)
     order = relationship("Order", back_populates="cure_in_order")

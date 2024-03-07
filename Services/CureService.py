@@ -55,7 +55,7 @@ def edit_cure(cureUid: str, db: Session, **kwargs) -> bool:
 
 def remove_cure(cureUid: str, db:Session) -> bool:
     try:
-        cure = db.query(dbCure).filter(dbCure.uid == cureUid).first()
+        cure = db.query(dbCure).filter(dbCure.uid == cureUid)
         cure.delete()
         db.commit()
         return True

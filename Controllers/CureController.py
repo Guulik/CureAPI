@@ -28,7 +28,7 @@ def get_all_cures(db: Session = Depends(get_db)):
 
 @router.get("/get_cure", response_model=ctCure)
 def get_cure(cureUid: str, db: Session = Depends(get_db)):
-    cure = CureService().get_cure(cureUid, db)
+    cure = CureService.get_cure(cureUid, db)
     if cure is None:
         raise HTTPException(status_code=404, detail="Cure not found")
     return map_cure(cure)
