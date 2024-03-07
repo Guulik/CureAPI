@@ -19,11 +19,12 @@ document.addEventListener("DOMContentLoaded", function() {
     async function fetchCureCartCount(cureUid) {
         try {
             const response = await fetch(`http://127.0.0.1:8000/order/get_cart?user_uid=a84c3213-c66c-4b29-872a-f49dc999bc49`);
-            if (response.body === "Cart is empty") {
+            const cartItems = await response.json();
+            if ("message" in cartItems && cartItems.message === "Cart is empty") {
                 console.log("Корзина пуста");
                 return 0;
             }
-            const cartItems = await response.json();
+            
             const cureResponse = await fetch(`http://127.0.0.1:8000/cure/get_cure?cure_uid=${cureUid}`);
             const cure = await cureResponse.json();
             const cureItem = cartItems.find(item => item.name === cure.name);
@@ -54,7 +55,12 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         };
 
-        const availabilityText = `Поставка: ${medicine.availabilityTime}  ${getDaysString(medicine.availabilityTime)}`; 
+        let availabilityText;
+        if (medicine.count > 0) {
+            availabilityText = `Есть на складе`;
+        } else {
+            availabilityText = `Поставка: ${medicine.availabilityTime} ${getDaysString(medicine.availabilityTime)}`;
+}
         const cureUid = medicine.uid; // Получаем uid лекарства
 
         const cartCount = await fetchCureCartCount(cureUid);
@@ -78,6 +84,7 @@ document.addEventListener("DOMContentLoaded", function() {
             alert("Недостаточно лекарства на складе");
             return;
         }
+        
         const userUid = "a84c3213-c66c-4b29-872a-f49dc999bc49"; // Ваш user_uid
         const url = `http://127.0.0.1:8000/order/add_cure?cure_uid=${cureUid}&user_uid=${userUid}`;
         // Отправляем запрос
@@ -99,6 +106,13 @@ document.addEventListener("DOMContentLoaded", function() {
 
         const removeFromCartButton = div.querySelector(".remove-from-cart");
         removeFromCartButton.addEventListener("click", async () => {
+
+        const cureCartCount = await fetchCureCartCount(cureUid);
+        if (cureCartCount === 0 ) {
+            alert("У вас в корзине нет этого лекарства");
+            return;
+        }
+
         const userUid = "a84c3213-c66c-4b29-872a-f49dc999bc49"; // Ваш user_uid
         const url = `http://127.0.0.1:8000/order/remove_cure?cure_uid=${cureUid}&user_uid=${userUid}`;
         // Отправляем запрос
