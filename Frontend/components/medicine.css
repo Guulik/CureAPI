@@ -1,0 +1,135 @@
+.medicine-container {
+  width: 300px;
+  height: 293px;
+  display: flex;
+  position: relative;
+  margin-top: var(--dl-space-space-unit);
+  align-items: flex-start;
+  margin-left: var(--dl-space-space-unit);
+  margin-right: var(--dl-space-space-unit);
+  border-radius: var(--dl-radius-radius-radius8);
+  margin-bottom: var(--dl-space-space-unit);
+  flex-direction: column;
+  background-color: #C6D8AF;
+}
+.medicine-cname {
+  width: 100%;
+  height: var(--dl-size-size-small);
+  display: flex;
+  align-items: flex-start;
+}
+.medicine-name {
+  top: var(--dl-space-space-unit);
+  left: var(--dl-space-space-unit);
+  position: absolute;
+  align-self: center;
+}
+.medicine-cdescription {
+  width: 100%;
+  height: var(--dl-size-size-small);
+  display: flex;
+  align-items: flex-start;
+  border-color: var(--dl-color-gray-700);
+  border-width: 1px;
+  border-left-width: 0px;
+  border-right-width: 0px;
+}
+.medicine-description {
+  align-self: center;
+  padding-left: var(--dl-space-space-unit);
+}
+.medicine-cprice {
+  width: 100%;
+  height: var(--dl-size-size-small);
+  display: flex;
+  align-items: flex-start;
+  border-color: var(--dl-color-gray-700);
+  border-width: 1px;
+  border-top-width: 0px;
+  border-left-width: 0px;
+  border-right-width: 0px;
+}
+.medicine-price {
+  align-self: center;
+  padding-top: 0px;
+  padding-left: var(--dl-space-space-unit);
+}
+.medicine-cavailability {
+  width: 100%;
+  height: var(--dl-size-size-small);
+  display: flex;
+  align-items: flex-start;
+  border-color: var(--dl-color-gray-700);
+  border-style: solid;
+  border-width: 1px;
+  border-radius: var(--dl-radius-radius-radius2);
+  border-top-width: 0px;
+  border-left-width: 0px;
+  border-right-width: 0px;
+}
+.medicine-availability {
+  align-self: center;
+  padding-top: 0px;
+  padding-left: var(--dl-space-space-unit);
+}
+.medicine-cstock {
+  width: 100%;
+  height: var(--dl-size-size-small);
+  display: flex;
+  align-items: flex-start;
+  border-color: var(--dl-color-gray-700);
+  border-width: 1px;
+  border-radius: var(--dl-radius-radius-radius2);
+  border-top-width: 0px;
+  border-left-width: 0px;
+  border-right-width: 0px;
+}
+.medicine-stock {
+  align-self: center;
+  padding-top: 0px;
+  padding-left: var(--dl-space-space-unit);
+}
+.medicine-ccart {
+  width: 100%;
+  height: var(--dl-size-size-small);
+  display: flex;
+  align-items: flex-start;
+  border-radius: var(--dl-radius-radius-radius2);
+}
+.medicine-cart {
+  align-self: center;
+  padding-top: 0px;
+  padding-left: var(--dl-space-space-unit);
+}
+.medicine-cart-buttons {
+  flex: 0 0 auto;
+  width: 174px;
+  height: var(--dl-size-size-small);
+  display: flex;
+  position: relative;
+  margin-top: 0px;
+  align-items: center;
+  justify-content: flex-start;
+}
+.medicine-plus-btn {
+  align-self: center;
+  margin-left: var(--dl-space-space-halfunit);
+  border-color: var(--dl-color-custom-neutral-dark);
+  margin-right: var(--dl-space-space-halfunit);
+  background-color: #b9c9a5;
+  
+}
+.medicine-cart-count {
+  align-self: center;
+  margin-left: var(--dl-space-space-halfunit);
+  margin-right: var(--dl-space-space-halfunit);
+}
+.medicine-minus-btn {
+  align-self: center;
+  margin-left: var(--dl-space-space-halfunit);
+  border-color: var(--dl-color-custom-neutral-dark);
+  margin-right: 0px;
+  background-color:  #b9c9a5;
+}
+
+

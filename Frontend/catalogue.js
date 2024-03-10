@@ -1,16 +1,17 @@
 document.addEventListener("DOMContentLoaded", function() {
-    const container = document.querySelector(".container");
-    const userUid = localStorage.getItem('userUid');
-    const logoutButton = document.getElementById("logout");
+    const mainContainer = document.getElementById("main-contatiner");
 
+    const userUid = localStorage.getItem('userUid');
+
+    const logoutButton = document.getElementById("logout");
     logoutButton.addEventListener("click", function() {
         localStorage.removeItem("userUid");
-        window.location.href = "login.html";
+        window.location.href = "index.html";
     });
 
     const checkoutButton = document.getElementById("checkout-btn");
     checkoutButton.addEventListener("click", function() {
-        var deliveryType = document.getElementById("delivery-type-checkbox").checked ? true : false;
+        var deliveryType = document.getElementById("self-delivery").checked ? true : false;
         var url = `http://127.0.0.1:8000/order/place_order?user_uid=${userUid}&delivery_type=${deliveryType}`;
         fetch(url, { method: "POST" })
             .then(response => {
@@ -18,9 +19,6 @@ document.addEventListener("DOMContentLoaded", function() {
                     throw new Error('Network response was not ok');
                 }
                 return response.json();
-            })
-            .then(data => {
-                // Handle the response data here
             })
             .catch(error => {
                 console.error('There has been a problem with your fetch operation:', error);
@@ -73,8 +71,9 @@ document.addEventListener("DOMContentLoaded", function() {
     
     // Функция для создания HTML-разметки для каждого лекарства
     async function createMedicineElement(medicine) {
-        const div = document.createElement("div");
-        div.classList.add("medicine");
+        const cureUid = medicine.uid; 
+        console.log(cureUid)
+        const cartCount = await fetchCureCartCount(cureUid);
 
         const getDaysString = (days) => {
             if (days === 1) {
@@ -91,75 +90,105 @@ document.addEventListener("DOMContentLoaded", function() {
             availabilityText = `Есть на складе`;
         } else {
             availabilityText = `Поставка: ${medicine.availabilityTime} ${getDaysString(medicine.availabilityTime)}`;
-}
-        const cureUid = medicine.uid; // Получаем uid лекарства
+        }
 
-        const cartCount = await fetchCureCartCount(cureUid);
+        const div = document.createElement("div");
+        div.classList.add("medicine");
+
+        const link = document.createElement('link');
+
+        link.type = 'text/css';
+        link.rel = 'stylesheet';
+        link.href = 'components/medicine.css';
+    
+        div.appendChild(link);
+
+        
 
         div.innerHTML = `
-            <h3>${medicine.name}</h3>
-            <p>Описание: ${medicine.description}</p>
-            <p>Цена: $${medicine.price}</p>
-            <p>${availabilityText}</p>
-            <p>На складе: ${medicine.count}</p>
-            <button class="add-to-cart">+</button>
-            <span class="cart-quantity">${cartCount}</span>
-            <button class="remove-from-cart">-</button>
+        <div>
+        <link href="components/medicine.css" rel="stylesheet" />
+        <div class="medicine-container">
+            <div class="medicine-cname">
+            <h3 class="medicine-name">${medicine.name}</h3>
+            </div>
+            <div class="medicine-cdescription">
+            <span class="medicine-description">${medicine.description}</span>
+            </div>
+            <div class="medicine-cprice">
+            <span class="medicine-price">${medicine.price} руб</span>
+            </div>
+            <div class="medicine-cavailability">
+            <span class="medicine-availability">${availabilityText}</span>
+            </div>
+            <div class="medicine-cstock">
+            <span class="medicine-stock">На складе: ${medicine.count}</span></div>
+            <div class="medicine-ccart">
+            <span class="medicine-cart"><span>В корзине:</span></span>
+            <div class="medicine-cart-buttons">
+                <button type="button" class="medicine-plus-btn button">
+                <span>+</span>
+                </button>
+                <span class="medicine-cart-count">${cartCount}</span>
+                <button type="button" class="medicine-minus-btn button">
+                <span>-</span>
+                </button>
+            </div>
+            </div>
+        </div>
+        </div>
         `;
 
-        const addToCartButton = div.querySelector(".add-to-cart");
+        const addToCartButton = div.querySelector(".medicine-plus-btn");
         addToCartButton.addEventListener("click", async () => {
-
-        const cureCartCount = await fetchCureCartCount(cureUid);
-        if (cureCartCount >= medicine.count) {
-            alert("Недостаточно лекарства на складе");
-            return;
-        }
-        
-
-        const url = `http://127.0.0.1:8000/order/add_cure?cure_uid=${cureUid}&user_uid=${userUid}`;
-        // Отправляем запрос
-        fetch(url, { method: "POST" })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-            })
-            .catch(error => {
-                console.error('There has been a problem with your fetch operation:', error);
-            });
-        
-            const quantityElement = div.querySelector(".cart-quantity");
-            const newCount = await fetchCureCartCount(cureUid);
-            quantityElement.innerText = newCount;  
+            const cureCartCount = await fetchCureCartCount(cureUid);
+            if (cureCartCount >= medicine.count) {
+                alert("Недостаточно лекарства на складе");
+                return;
+            }
+            
+            const url = `http://127.0.0.1:8000/order/add_cure?cure_uid=${cureUid}&user_uid=${userUid}`;
+            fetch(url, { method: "POST" })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                })
+                .catch(error => {
+                    console.error('There has been a problem with your fetch operation:', error);
+                });
+            
+                const quantityElement = div.querySelector(".medicine-cart-count");
+                const newCount = await fetchCureCartCount(cureUid);
+                quantityElement.innerText = newCount;  
 
         });
 
-        const removeFromCartButton = div.querySelector(".remove-from-cart");
+
+        const removeFromCartButton = div.querySelector(".medicine-minus-btn");
         removeFromCartButton.addEventListener("click", async () => {
+            const cureCartCount = await fetchCureCartCount(cureUid);
+            if (cureCartCount === 0 ) {
+                alert("У вас в корзине нет этого лекарства");
+                return;
+            }
 
-        const cureCartCount = await fetchCureCartCount(cureUid);
-        if (cureCartCount === 0 ) {
-            alert("У вас в корзине нет этого лекарства");
-            return;
-        }
+            const url = `http://127.0.0.1:8000/order/remove_cure?cure_uid=${cureUid}&user_uid=${userUid}`;
+            // Отправляем запрос
+            fetch(url, { method: "POST" })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                })
 
-        const url = `http://127.0.0.1:8000/order/remove_cure?cure_uid=${cureUid}&user_uid=${userUid}`;
-        // Отправляем запрос
-        fetch(url, { method: "POST" })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-            })
+                .catch(error => {
+                    console.error('There has been a problem with your fetch operation:', error);
+                });
 
-            .catch(error => {
-                console.error('There has been a problem with your fetch operation:', error);
-            });
-
-            const quantityElement = div.querySelector(".cart-quantity");
-            const newCount = await fetchCureCartCount(cureUid);
-            quantityElement.innerText = newCount;
+                const quantityElement = div.querySelector(".medicine-cart-count");
+                const newCount = await fetchCureCartCount(cureUid);
+                quantityElement.innerText = newCount;
         });
         return div;
     }
@@ -168,13 +197,21 @@ document.addEventListener("DOMContentLoaded", function() {
     async function renderMedicines() {
         const medicines = await fetchMedicines();
         if (medicines) {
+            let count = 0;
+            let currentRow;
             for (const medicine of medicines) {
-                const medicineElement = await createMedicineElement(medicine);
-                container.appendChild(medicineElement);
+                if (count % 5 === 0) {
+                    currentRow = document.createElement('div');
+                    currentRow.classList.add('catalogue-catalogue-row');
+                    mainContainer.appendChild(currentRow);
+            }
+            const medicineElement = await createMedicineElement(medicine);
+            currentRow.appendChild(medicineElement);
+            count++;
             }
         }
-    }
 
+    }
     // Вызов функции для добавления лекарств на страницу каталога
     renderMedicines();
 });
