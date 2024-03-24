@@ -20,31 +20,34 @@ def map_cure(db_cure) -> ctCure:
 router = APIRouter()
 
 
-@router.get("/get_all", response_model=list[ctCure])
+@router.get("/get_all", tags=["cure"], response_model=list[ctCure])
 def get_all_cures(db: Session = Depends(get_db)):
     cures = CureService.get_cures(db)
     return [map_cure(cure) for cure in cures]
 
 
-@router.get("/get_cure", response_model=ctCure)
+@router.get("/get_cure", tags=["cure"],response_model=ctCure)
 def get_cure(cure_uid: str, db: Session = Depends(get_db)):
     cure = CureService.get_cure(cure_uid, db)
     if cure is None:
         raise HTTPException(status_code=404, detail="Cure not found")
     return map_cure(cure)
 
-@router.post("/create_cure")
+
+@router.post("/create_cure", tags=["cure"])
 def create_cure(name: str,  price: int, count: int, availabilityTime: int, description: str = None, db: Session = Depends(get_db)):
     return CureService.create_cure(name, description, price, count, availabilityTime, db)
 
-@router.put("/edit_cure")
+
+@router.put("/edit_cure", tags=["cure"])
 def edit_cure(cureUid: str, name: str = None, description: str = None, price: int = None, count: int = None, availabilityTime: int = None, db: Session = Depends(get_db)):
     success = CureService.edit_cure(cureUid, db, name=name, description=description, price=price, count=count, availabilityTime=availabilityTime)
     if not success:
         raise HTTPException(status_code=404, detail="Cure not found")
     return {"message": "Cure updated successfully"}
 
-@router.delete("/delete_cure")
+
+@router.delete("/delete_cure", tags=["cure"])
 def delete_cure(cureUid: str, db: Session = Depends(get_db)):
     success = CureService.remove_cure(cureUid, db)
     if not success:
